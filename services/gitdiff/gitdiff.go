@@ -1136,10 +1136,7 @@ func GetDiff(ctx context.Context, gitRepo *git.Repository, opts *DiffOptions, fi
 	} else {
 		actualBeforeCommitID := opts.BeforeCommitID
 		if len(actualBeforeCommitID) == 0 {
-			parentCommit, err := commit.Parent(0)
-			if err != nil {
-				return nil, err
-			}
+			parentCommit, _ := commit.Parent(0)
 			actualBeforeCommitID = parentCommit.ID.String()
 		}
 
@@ -1148,6 +1145,7 @@ func GetDiff(ctx context.Context, gitRepo *git.Repository, opts *DiffOptions, fi
 			AddDynamicArguments(actualBeforeCommitID, opts.AfterCommitID)
 		opts.BeforeCommitID = actualBeforeCommitID
 
+		var err error
 		beforeCommit, err = gitRepo.GetCommit(opts.BeforeCommitID)
 		if err != nil {
 			return nil, err

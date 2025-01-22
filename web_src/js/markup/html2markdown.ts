@@ -1,9 +1,7 @@
 import {htmlEscape} from 'escape-goat';
 
-type Processor = (el: HTMLElement) => string | HTMLElement | void;
-
 type Processors = {
-  [tagName: string]: Processor;
+  [tagName: string]: (el: HTMLElement) => string | HTMLElement | void;
 }
 
 type ProcessorContext = {
@@ -13,7 +11,7 @@ type ProcessorContext = {
 }
 
 function prepareProcessors(ctx:ProcessorContext): Processors {
-  const processors: Processors = {
+  const processors = {
     H1(el: HTMLElement) {
       const level = parseInt(el.tagName.slice(1));
       el.textContent = `${'#'.repeat(level)} ${el.textContent.trim()}`;

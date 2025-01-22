@@ -6,9 +6,6 @@ package routing
 import (
 	"context"
 	"net/http"
-
-	"code.gitea.io/gitea/modules/gtprof"
-	"code.gitea.io/gitea/modules/reqctx"
 )
 
 type contextKeyType struct{}
@@ -17,12 +14,10 @@ var contextKey contextKeyType
 
 // RecordFuncInfo records a func info into context
 func RecordFuncInfo(ctx context.Context, funcInfo *FuncInfo) (end func()) {
+	// TODO: reqCtx := reqctx.FromContext(ctx), add trace support
 	end = func() {}
-	if reqCtx := reqctx.FromContext(ctx); reqCtx != nil {
-		var traceSpan *gtprof.TraceSpan
-		traceSpan, end = gtprof.GetTracer().StartInContext(reqCtx, "http.func")
-		traceSpan.SetAttributeString("func", funcInfo.shortName)
-	}
+
+	// save the func info into the context record
 	if record, ok := ctx.Value(contextKey).(*requestRecord); ok {
 		record.lock.Lock()
 		record.funcInfo = funcInfo

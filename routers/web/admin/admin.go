@@ -37,7 +37,6 @@ const (
 	tplSelfCheck    templates.TplName = "admin/self_check"
 	tplCron         templates.TplName = "admin/cron"
 	tplQueue        templates.TplName = "admin/queue"
-	tplPerfTrace    templates.TplName = "admin/perftrace"
 	tplStacktrace   templates.TplName = "admin/stacktrace"
 	tplQueueManage  templates.TplName = "admin/queue_manage"
 	tplStats        templates.TplName = "admin/stats"

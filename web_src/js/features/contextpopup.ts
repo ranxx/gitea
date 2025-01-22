@@ -4,11 +4,11 @@ import {parseIssueHref} from '../utils.ts';
 import {createTippy} from '../modules/tippy.ts';
 
 export function initContextPopups() {
-  const refIssues = document.querySelectorAll<HTMLElement>('.ref-issue');
+  const refIssues = document.querySelectorAll('.ref-issue');
   attachRefIssueContextPopup(refIssues);
 }
 
-export function attachRefIssueContextPopup(refIssues: NodeListOf<HTMLElement>) {
+export function attachRefIssueContextPopup(refIssues) {
   for (const refIssue of refIssues) {
     if (refIssue.classList.contains('ref-external-issue')) continue;
 

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import DiffFileTreeItem, {type Item} from './DiffFileTreeItem.vue';
+import DiffFileTreeItem from './DiffFileTreeItem.vue';
 import {loadMoreFiles} from '../features/repo-diff.ts';
 import {toggleElem} from '../utils/dom.ts';
 import {diffTreeStore} from '../modules/stores.ts';
@@ -11,7 +11,7 @@ const LOCAL_STORAGE_KEY = 'diff_file_tree_visible';
 const store = diffTreeStore();
 
 const fileTree = computed(() => {
-  const result: Array<Item> = [];
+  const result = [];
   for (const file of store.files) {
     // Split file into directories
     const splits = file.Name.split('/');
@@ -24,10 +24,15 @@ const fileTree = computed(() => {
       if (index === splits.length) {
         isFile = true;
       }
-      let newParent: Item = {
+      let newParent = {
         name: split,
         children: [],
         isFile,
+      } as {
+        name: string,
+        children: any[],
+        isFile: boolean,
+        file?: any,
       };
 
       if (isFile === true) {

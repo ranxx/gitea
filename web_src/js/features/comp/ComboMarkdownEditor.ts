@@ -29,10 +29,10 @@ let elementIdCounter = 0;
 
 /**
  * validate if the given textarea is non-empty.
- * @param {HTMLTextAreaElement} textarea - The textarea element to be validated.
+ * @param {HTMLElement} textarea - The textarea element to be validated.
  * @returns {boolean} returns true if validation succeeded.
  */
-export function validateTextareaNonEmpty(textarea: HTMLTextAreaElement) {
+export function validateTextareaNonEmpty(textarea) {
   // When using EasyMDE, the original edit area HTML element is hidden, breaking HTML5 input validation.
   // The workaround (https://github.com/sparksuite/simplemde-markdown-editor/issues/324) doesn't work with contenteditable, so we just show an alert.
   if (!textarea.value) {
@@ -49,25 +49,16 @@ export function validateTextareaNonEmpty(textarea: HTMLTextAreaElement) {
   return true;
 }
 
-type Heights = {
-  minHeight?: string,
-  height?: string,
-  maxHeight?: string,
-};
-
 type ComboMarkdownEditorOptions = {
-  editorHeights?: Heights,
+  editorHeights?: {minHeight?: string, height?: string, maxHeight?: string},
   easyMDEOptions?: EasyMDE.Options,
 };
-
-type ComboMarkdownEditorTextarea = HTMLTextAreaElement & {_giteaComboMarkdownEditor: any};
-type ComboMarkdownEditorContainer = HTMLElement & {_giteaComboMarkdownEditor?: any};
 
 export class ComboMarkdownEditor {
   static EventEditorContentChanged = EventEditorContentChanged;
   static EventUploadStateChanged = EventUploadStateChanged;
 
-  public container: HTMLElement;
+  public container : HTMLElement;
 
   options: ComboMarkdownEditorOptions;
 
@@ -79,7 +70,7 @@ export class ComboMarkdownEditor {
   easyMDEToolbarActions: any;
   easyMDEToolbarDefault: any;
 
-  textarea: ComboMarkdownEditorTextarea;
+  textarea: HTMLTextAreaElement & {_giteaComboMarkdownEditor: any};
   textareaMarkdownToolbar: HTMLElement;
   textareaAutosize: any;
 
@@ -90,7 +81,7 @@ export class ComboMarkdownEditor {
   previewUrl: string;
   previewContext: string;
 
-  constructor(container: ComboMarkdownEditorContainer, options:ComboMarkdownEditorOptions = {}) {
+  constructor(container, options:ComboMarkdownEditorOptions = {}) {
     if (container._giteaComboMarkdownEditor) throw new Error('ComboMarkdownEditor already initialized');
     container._giteaComboMarkdownEditor = this;
     this.options = options;
@@ -107,7 +98,7 @@ export class ComboMarkdownEditor {
     await this.switchToUserPreference();
   }
 
-  applyEditorHeights(el: HTMLElement, heights: Heights) {
+  applyEditorHeights(el, heights) {
     if (!heights) return;
     if (heights.minHeight) el.style.minHeight = heights.minHeight;
     if (heights.height) el.style.height = heights.height;
@@ -292,7 +283,7 @@ export class ComboMarkdownEditor {
     ];
   }
 
-  parseEasyMDEToolbar(easyMde: typeof EasyMDE, actions: any) {
+  parseEasyMDEToolbar(easyMde: typeof EasyMDE, actions) {
     this.easyMDEToolbarActions = this.easyMDEToolbarActions || easyMDEToolbarActions(easyMde, this);
     const processed = [];
     for (const action of actions) {
@@ -341,21 +332,21 @@ export class ComboMarkdownEditor {
     this.easyMDE = new EasyMDE(easyMDEOpt);
     this.easyMDE.codemirror.on('change', () => triggerEditorContentChanged(this.container));
     this.easyMDE.codemirror.setOption('extraKeys', {
-      'Cmd-Enter': (cm: any) => handleGlobalEnterQuickSubmit(cm.getTextArea()),
-      'Ctrl-Enter': (cm: any) => handleGlobalEnterQuickSubmit(cm.getTextArea()),
-      Enter: (cm: any) => {
+      'Cmd-Enter': (cm) => handleGlobalEnterQuickSubmit(cm.getTextArea()),
+      'Ctrl-Enter': (cm) => handleGlobalEnterQuickSubmit(cm.getTextArea()),
+      Enter: (cm) => {
         const tributeContainer = document.querySelector<HTMLElement>('.tribute-container');
         if (!tributeContainer || tributeContainer.style.display === 'none') {
           cm.execCommand('newlineAndIndent');
         }
       },
-      Up: (cm: any) => {
+      Up: (cm) => {
         const tributeContainer = document.querySelector<HTMLElement>('.tribute-container');
         if (!tributeContainer || tributeContainer.style.display === 'none') {
           return cm.execCommand('goLineUp');
         }
       },
-      Down: (cm: any) => {
+      Down: (cm) => {
         const tributeContainer = document.querySelector<HTMLElement>('.tribute-container');
         if (!tributeContainer || tributeContainer.style.display === 'none') {
           return cm.execCommand('goLineDown');
@@ -363,14 +354,14 @@ export class ComboMarkdownEditor {
       },
     });
     this.applyEditorHeights(this.container.querySelector('.CodeMirror-scroll'), this.options.editorHeights);
-    await attachTribute(this.easyMDE.codemirror.getInputField());
+    await attachTribute(this.easyMDE.codemirror.getInputField(), {mentions: true, emoji: true});
     if (this.dropzone) {
       initEasyMDEPaste(this.easyMDE, this.dropzone);
     }
     hideElem(this.textareaMarkdownToolbar);
   }
 
-  value(v: any = undefined) {
+  value(v = undefined) {
     if (v === undefined) {
       if (this.easyMDE) {
         return this.easyMDE.value();
@@ -411,7 +402,7 @@ export class ComboMarkdownEditor {
   }
 }
 
-export function getComboMarkdownEditor(el: any) {
+export function getComboMarkdownEditor(el) {
   if (!el) return null;
   if (el.length) el = el[0];
   return el._giteaComboMarkdownEditor;

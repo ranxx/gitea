@@ -1,10 +1,10 @@
 export const EventEditorContentChanged = 'ce-editor-content-changed';
 
-export function triggerEditorContentChanged(target: HTMLElement) {
+export function triggerEditorContentChanged(target) {
   target.dispatchEvent(new CustomEvent(EventEditorContentChanged, {bubbles: true}));
 }
 
-export function textareaInsertText(textarea: HTMLTextAreaElement, value: string) {
+export function textareaInsertText(textarea, value) {
   const startPos = textarea.selectionStart;
   const endPos = textarea.selectionEnd;
   textarea.value = textarea.value.substring(0, startPos) + value + textarea.value.substring(endPos);
@@ -20,7 +20,7 @@ type TextareaValueSelection = {
   selEnd: number;
 }
 
-function handleIndentSelection(textarea: HTMLTextAreaElement, e: KeyboardEvent) {
+function handleIndentSelection(textarea: HTMLTextAreaElement, e) {
   const selStart = textarea.selectionStart;
   const selEnd = textarea.selectionEnd;
   if (selEnd === selStart) return; // do not process when no selection
@@ -184,13 +184,8 @@ function handleNewline(textarea: HTMLTextAreaElement, e: Event) {
   triggerEditorContentChanged(textarea);
 }
 
-function isTextExpanderShown(textarea: HTMLElement): boolean {
-  return Boolean(textarea.closest('text-expander')?.querySelector('.suggestions'));
-}
-
-export function initTextareaMarkdown(textarea: HTMLTextAreaElement) {
+export function initTextareaMarkdown(textarea) {
   textarea.addEventListener('keydown', (e) => {
-    if (isTextExpanderShown(textarea)) return;
     if (e.key === 'Tab' && !e.ctrlKey && !e.metaKey && !e.altKey) {
       // use Tab/Shift-Tab to indent/unindent the selected lines
       handleIndentSelection(textarea, e);

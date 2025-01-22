@@ -35,7 +35,7 @@ onUnmounted(() => {
   document.querySelector('#scoped-access-submit').removeEventListener('click', onClickSubmit);
 });
 
-function onClickSubmit(e: Event) {
+function onClickSubmit(e) {
   e.preventDefault();
 
   const warningEl = document.querySelector('#scoped-access-warning');
