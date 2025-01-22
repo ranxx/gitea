@@ -3,7 +3,7 @@ import {hideElem, loadElem, queryElemChildren, queryElems} from '../utils/dom.ts
 import {parseDom} from '../utils.ts';
 import {fomanticQuery} from '../modules/fomantic/base.ts';
 
-function getDefaultSvgBoundsIfUndefined(text: string, src: string) {
+function getDefaultSvgBoundsIfUndefined(text, src) {
   const defaultSize = 300;
   const maxSize = 99999;
 
@@ -38,7 +38,7 @@ function getDefaultSvgBoundsIfUndefined(text: string, src: string) {
   return null;
 }
 
-function createContext(imageAfter: HTMLImageElement, imageBefore: HTMLImageElement) {
+function createContext(imageAfter, imageBefore) {
   const sizeAfter = {
     width: imageAfter?.width || 0,
     height: imageAfter?.height || 0,
@@ -123,7 +123,7 @@ class ImageDiff {
     queryElemChildren(containerEl, '.image-diff-tabs', (el) => el.classList.remove('is-loading'));
   }
 
-  initSideBySide(sizes: Record<string, any>) {
+  initSideBySide(sizes) {
     let factor = 1;
     if (sizes.maxSize.width > (this.diffContainerWidth - 24) / 2) {
       factor = (this.diffContainerWidth - 24) / 2 / sizes.maxSize.width;
@@ -176,7 +176,7 @@ class ImageDiff {
     }
   }
 
-  initSwipe(sizes: Record<string, any>) {
+  initSwipe(sizes) {
     let factor = 1;
     if (sizes.maxSize.width > this.diffContainerWidth - 12) {
       factor = (this.diffContainerWidth - 12) / sizes.maxSize.width;
@@ -215,14 +215,14 @@ class ImageDiff {
 
     this.containerEl.querySelector('.swipe-bar').addEventListener('mousedown', (e) => {
       e.preventDefault();
-      this.initSwipeEventListeners(e.currentTarget as HTMLElement);
+      this.initSwipeEventListeners(e.currentTarget);
     });
   }
 
-  initSwipeEventListeners(swipeBar: HTMLElement) {
-    const swipeFrame = swipeBar.parentNode as HTMLElement;
+  initSwipeEventListeners(swipeBar) {
+    const swipeFrame = swipeBar.parentNode;
     const width = swipeFrame.clientWidth;
-    const onSwipeMouseMove = (e: MouseEvent) => {
+    const onSwipeMouseMove = (e) => {
       e.preventDefault();
       const rect = swipeFrame.getBoundingClientRect();
       const value = Math.max(0, Math.min(e.clientX - rect.left, width));
@@ -237,7 +237,7 @@ class ImageDiff {
     document.addEventListener('mouseup', removeEventListeners);
   }
 
-  initOverlay(sizes: Record<string, any>) {
+  initOverlay(sizes) {
     let factor = 1;
     if (sizes.maxSize.width > this.diffContainerWidth - 12) {
       factor = (this.diffContainerWidth - 12) / sizes.maxSize.width;

@@ -21,7 +21,7 @@ function initOrgTeamSearchRepoBox() {
     minCharacters: 2,
     apiSettings: {
       url: `${appSubUrl}/repo/search?q={query}&uid=${$searchRepoBox.data('uid')}`,
-      onResponse(response: any) {
+      onResponse(response) {
         const items = [];
         for (const item of response.data) {
           items.push({

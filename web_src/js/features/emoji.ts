@@ -15,13 +15,13 @@ export const emojiKeys = Object.keys(tempMap).sort((a, b) => {
   return a.localeCompare(b);
 });
 
-const emojiMap: Record<string, string> = {};
+const emojiMap = {};
 for (const key of emojiKeys) {
   emojiMap[key] = tempMap[key];
 }
 
 // retrieve HTML for given emoji name
-export function emojiHTML(name: string) {
+export function emojiHTML(name) {
   let inner;
   if (Object.hasOwn(customEmojis, name)) {
     inner = `<img alt=":${name}:" src="${assetUrlPrefix}/img/emoji/${name}.png">`;
@@ -33,6 +33,6 @@ export function emojiHTML(name: string) {
 }
 
 // retrieve string for given emoji name
-export function emojiString(name: string) {
+export function emojiString(name) {
   return emojiMap[name] || `:${name}:`;
 }

@@ -12,12 +12,11 @@ export function initInstall() {
     initPreInstall();
   }
 }
-
 function initPreInstall() {
   const defaultDbUser = 'gitea';
   const defaultDbName = 'gitea';
 
-  const defaultDbHosts: Record<string, string> = {
+  const defaultDbHosts = {
     mysql: '127.0.0.1:3306',
     postgres: '127.0.0.1:5432',
     mssql: '127.0.0.1:1433',

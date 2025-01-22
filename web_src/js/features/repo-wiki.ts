@@ -70,7 +70,7 @@ async function initRepoWikiFormEditor() {
   });
 }
 
-function collapseWikiTocForMobile(collapse: boolean) {
+function collapseWikiTocForMobile(collapse) {
   if (collapse) {
     document.querySelector('.wiki-content-toc details')?.removeAttribute('open');
   }

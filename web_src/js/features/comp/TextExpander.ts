@@ -1,20 +1,14 @@
 import {matchEmoji, matchMention, matchIssue} from '../../utils/match.ts';
 import {emojiString} from '../emoji.ts';
 import {svg} from '../../svg.ts';
-import {parseIssueHref, parseRepoOwnerPathInfo} from '../../utils.ts';
+import {parseIssueHref, parseIssueNewHref} from '../../utils.ts';
 import {createElementFromAttrs, createElementFromHTML} from '../../utils/dom.ts';
 import {getIssueColor, getIssueIcon} from '../issue.ts';
 import {debounce} from 'perfect-debounce';
-import type TextExpanderElement from '@github/text-expander-element';
 
 const debouncedSuggestIssues = debounce((key: string, text: string) => new Promise<{matched:boolean; fragment?: HTMLElement}>(async (resolve) => {
-  const issuePathInfo = parseIssueHref(window.location.href);
-  if (!issuePathInfo.ownerName) {
-    const repoOwnerPathInfo = parseRepoOwnerPathInfo(window.location.pathname);
-    issuePathInfo.ownerName = repoOwnerPathInfo.ownerName;
-    issuePathInfo.repoName = repoOwnerPathInfo.repoName;
-    // then no issuePathInfo.indexString here, it is only used to exclude the current issue when "matchIssue"
-  }
+  let issuePathInfo = parseIssueHref(window.location.href);
+  if (!issuePathInfo.ownerName) issuePathInfo = parseIssueNewHref(window.location.href);
   if (!issuePathInfo.ownerName) return resolve({matched: false});
 
   const matches = await matchIssue(issuePathInfo.ownerName, issuePathInfo.repoName, issuePathInfo.indexString, text);
@@ -33,8 +27,8 @@ const debouncedSuggestIssues = debounce((key: string, text: string) => new Promi
   resolve({matched: true, fragment: ul});
 }), 100);
 
-export function initTextExpander(expander: TextExpanderElement) {
-  expander?.addEventListener('text-expander-change', ({detail: {key, provide, text}}: Record<string, any>) => {
+export function initTextExpander(expander) {
+  expander?.addEventListener('text-expander-change', ({detail: {key, provide, text}}) => {
     if (key === ':') {
       const matches = matchEmoji(text);
       if (!matches.length) return provide({matched: false});
@@ -85,7 +79,7 @@ export function initTextExpander(expander: TextExpanderElement) {
       provide(debouncedSuggestIssues(key, text));
     }
   });
-  expander?.addEventListener('text-expander-value', ({detail}: Record<string, any>) => {
+  expander?.addEventListener('text-expander-value', ({detail}) => {
     if (detail?.item) {
       // add a space after @mentions and #issue as it's likely the user wants one
       const suffix = ['@', '#'].includes(detail.key) ? ' ' : '';

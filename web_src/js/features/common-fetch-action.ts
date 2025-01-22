@@ -75,10 +75,7 @@ async function formFetchAction(formEl: HTMLFormElement, e: SubmitEvent) {
   }
 
   let reqUrl = formActionUrl;
-  const reqOpt = {
-    method: formMethod.toUpperCase(),
-    body: null as FormData | null,
-  };
+  const reqOpt = {method: formMethod.toUpperCase(), body: null};
   if (formMethod.toLowerCase() === 'get') {
     const params = new URLSearchParams();
     for (const [key, value] of formData) {

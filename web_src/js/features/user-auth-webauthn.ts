@@ -114,7 +114,7 @@ async function login2FA() {
   }
 }
 
-async function verifyAssertion(assertedCredential: any) { // TODO: Credential type does not work
+async function verifyAssertion(assertedCredential) {
   // Move data into Arrays in case it is super long
   const authData = new Uint8Array(assertedCredential.response.authenticatorData);
   const clientDataJSON = new Uint8Array(assertedCredential.response.clientDataJSON);
@@ -148,7 +148,7 @@ async function verifyAssertion(assertedCredential: any) { // TODO: Credential ty
   window.location.href = reply?.redirect ?? `${appSubUrl}/`;
 }
 
-async function webauthnRegistered(newCredential: any) { // TODO: Credential type does not work
+async function webauthnRegistered(newCredential) {
   const attestationObject = new Uint8Array(newCredential.response.attestationObject);
   const clientDataJSON = new Uint8Array(newCredential.response.clientDataJSON);
   const rawId = new Uint8Array(newCredential.rawId);

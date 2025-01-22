@@ -157,7 +157,7 @@ export default defineComponent({
       // @ts-expect-error - el is unknown type
       return (el && el.length) ? el[0] : null;
     },
-    keydown(e: KeyboardEvent) {
+    keydown(e) {
       if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
         e.preventDefault();
 
@@ -181,7 +181,7 @@ export default defineComponent({
         this.menuVisible = false;
       }
     },
-    handleTabSwitch(selectedTab: SelectedTab) {
+    handleTabSwitch(selectedTab) {
       this.selectedTab = selectedTab;
       this.focusSearchField();
       this.loadTabItems();

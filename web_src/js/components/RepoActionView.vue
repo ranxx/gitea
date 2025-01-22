@@ -6,7 +6,6 @@ import {createElementFromAttrs, toggleElem} from '../utils/dom.ts';
 import {formatDatetime} from '../utils/time.ts';
 import {renderAnsi} from '../render/ansi.ts';
 import {POST, DELETE} from '../modules/fetch.ts';
-import type {IntervalId} from '../types.ts';
 
 // see "models/actions/status.go", if it needs to be used somewhere else, move it to a shared file like "types/actions.ts"
 type RunStatus = 'unknown' | 'waiting' | 'running' | 'success' | 'failure' | 'cancelled' | 'skipped' | 'blocked';
@@ -23,20 +22,6 @@ const LogLinePrefixesEndGroup = ['::endgroup::', '##[endgroup]'];
 type LogLineCommand = {
   name: 'group' | 'endgroup',
   prefix: string,
-}
-
-type Job = {
-  id: number;
-  name: string;
-  status: RunStatus;
-  canRerun: boolean;
-  duration: string;
-}
-
-type Step = {
-  summary: string,
-  duration: string,
-  status: RunStatus,
 }
 
 function parseLineCommand(line: LogLine): LogLineCommand | null {
@@ -92,7 +77,7 @@ export default defineComponent({
       default: '',
     },
     locale: {
-      type: Object as PropType<Record<string, any>>,
+      type: Object as PropType<Record<string, string>>,
       default: null,
     },
   },
@@ -101,10 +86,10 @@ export default defineComponent({
     const {autoScroll, expandRunning} = getLocaleStorageOptions();
     return {
       // internal state
-      loadingAbortController: null as AbortController | null,
-      intervalID: null as IntervalId | null,
-      currentJobStepsStates: [] as Array<Record<string, any>>,
-      artifacts: [] as Array<Record<string, any>>,
+      loadingAbortController: null,
+      intervalID: null,
+      currentJobStepsStates: [],
+      artifacts: [],
       onHoverRerunIndex: -1,
       menuVisible: false,
       isFullScreen: false,
@@ -137,7 +122,7 @@ export default defineComponent({
           //   canRerun: false,
           //   duration: '',
           // },
-        ] as Array<Job>,
+        ],
         commit: {
           localeCommit: '',
           localePushedBy: '',
@@ -163,7 +148,7 @@ export default defineComponent({
           //   duration: '',
           //   status: '',
           // }
-        ] as Array<Step>,
+        ],
       },
     };
   },
@@ -209,7 +194,7 @@ export default defineComponent({
 
     // get the job step logs container ('.job-step-logs')
     getJobStepLogsContainer(stepIndex: number): HTMLElement {
-      return (this.$refs.logs as any)[stepIndex];
+      return this.$refs.logs[stepIndex];
     },
 
     // get the active logs container element, either the `job-step-logs` or the `job-log-list` in the `job-log-group`
@@ -220,7 +205,7 @@ export default defineComponent({
     },
     // begin a log group
     beginLogGroup(stepIndex: number, startTime: number, line: LogLine, cmd: LogLineCommand) {
-      const el = (this.$refs.logs as any)[stepIndex];
+      const el = this.$refs.logs[stepIndex];
       const elJobLogGroupSummary = createElementFromAttrs('summary', {class: 'job-log-group-summary'},
         this.createLogLine(stepIndex, startTime, {
           index: line.index,
@@ -238,7 +223,7 @@ export default defineComponent({
     },
     // end a log group
     endLogGroup(stepIndex: number, startTime: number, line: LogLine, cmd: LogLineCommand) {
-      const el = (this.$refs.logs as any)[stepIndex];
+      const el = this.$refs.logs[stepIndex];
       el._stepLogsActiveContainer = null;
       el.append(this.createLogLine(stepIndex, startTime, {
         index: line.index,
@@ -408,7 +393,7 @@ export default defineComponent({
       if (this.menuVisible) this.menuVisible = false;
     },
 
-    toggleTimeDisplay(type: 'seconds' | 'stamp') {
+    toggleTimeDisplay(type: string) {
       this.timeVisible[`log-time-${type}`] = !this.timeVisible[`log-time-${type}`];
       for (const el of (this.$refs.steps as HTMLElement).querySelectorAll(`.log-time-${type}`)) {
         toggleElem(el, this.timeVisible[`log-time-${type}`]);
@@ -437,10 +422,9 @@ export default defineComponent({
       const selectedLogStep = window.location.hash;
       if (!selectedLogStep) return;
       const [_, step, _line] = selectedLogStep.split('-');
-      const stepNum = Number(step);
-      if (!this.currentJobStepsStates[stepNum]) return;
-      if (!this.currentJobStepsStates[stepNum].expanded && this.currentJobStepsStates[stepNum].cursor === null) {
-        this.currentJobStepsStates[stepNum].expanded = true;
+      if (!this.currentJobStepsStates[step]) return;
+      if (!this.currentJobStepsStates[step].expanded && this.currentJobStepsStates[step].cursor === null) {
+        this.currentJobStepsStates[step].expanded = true;
         // need to await for load job if the step log is loaded for the first time
         // so logline can be selected by querySelector
         await this.loadJob();
